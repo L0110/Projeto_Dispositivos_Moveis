@@ -1,0 +1,34 @@
+Game React Native
+- Login
+- Nova Conta
+- Inicio
+- Perfil
+1. Nome
+2. Nascimento
+3. Senha
+4. Email
+5. Foto perfil
+- Configurações
+1. Excluir conta(confirmar pedido e excluir conta)
+2. Sobre(Creditos)
+3. Tela probabilidades e estatísticas(Se necessário)
+- Sala
+1. Nova Sala(Gera codigo)
+2. Entrar em partida(Inserir codigo)
+- Carteira:
+1. Comprar moedas(valores tabelados)
+2. Saldo(saldo disponível)
+- Loja (itens disponíveis para troca/resgate)
+- Tela Vitória
+- Tela Derrota
+- Tela Empate
+- Tela Placar
+- Tela árvore de classificação
+- Tela roleta
+- Tela seleção jogos
+- Jogos:
+1. Quem aperta o botão primeiro
+2. Quem Aperta o botão em 10 segundos
+3. Quem aperta mais o botão
+4. Score(Flappy bird)
+* Painel definição de rodadas

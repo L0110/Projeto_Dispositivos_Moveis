@@ -1,0 +1,32 @@
+links referencias de possibilidades react native:
+
+//discurções
+- https://www.reddit.com/r/brdev/comments/15jr58n/criar_games_com_react_native/?rdt=33077
+
+- https://www.dtidigital.com.br/blog/desenvolvimento-de-software-react-native
+
+- https://www.dtidigital.com.br/blog/desenvolvimento-de-software-react-native
+
+//biblioteca
+- https://github.com/bberak/react-native-game-engine
+
+//aplicando react native no VSCode
+- https://learn.microsoft.com/pt-br/windows/dev-environment/javascript/react-native-for-android
+
+//aplicando react native na unity
+- https://www.youtube.com/watch?v=-A6S-JMLRBM
+
+//aplicando react native em jogos
+- https://www.youtube.com/watch?v=Af2-OT9mE14
+- https://www.youtube.com/watch?v=zK2xYD4Nytw
+- https://www.youtube.com/watch?v=hXogPCM4FS8
+
+
+//Tutoriais GameMaker Studio
+- https://gamemaker.io/pt-BR/tutorials
+
+//games engines:
+-Unity
+-Godod
+-Construct 2
+-Game maker studio
