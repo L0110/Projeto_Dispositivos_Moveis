@@ -1,0 +1,72 @@
+Criar um cronômetro em JavaScript que inclua milissegundos é uma tarefa divertida e relativamente simples. Aqui está um exemplo funcional que você pode usar diretamente em um ambiente online, como o console do navegador ou um editor como CodePen:
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cronômetro</title>
+</head>
+<body>
+  <h1>Cronômetro</h1>
+  <div id="display">00:00:00.000</div>
+  <button id="start">Iniciar</button>
+  <button id="stop">Parar</button>
+  <button id="reset">Resetar</button>
+
+  <script>
+    let startTime = 0;
+    let elapsedTime = 0;
+    let timerInterval;
+
+    function formatTime(time) {
+      const milliseconds = Math.floor((time % 1000));
+      const seconds = Math.floor((time / 1000) % 60);
+      const minutes = Math.floor((time / (1000 * 60)) % 60);
+      const hours = Math.floor((time / (1000 * 60 * 60)) % 24);
+
+      const formattedMilliseconds = milliseconds.toString().padStart(3, '0');
+      const formattedSeconds = seconds.toString().padStart(2, '0');
+      const formattedMinutes = minutes.toString().padStart(2, '0');
+      const formattedHours = hours.toString().padStart(2, '0');
+
+      return `${formattedHours}:${formattedMinutes}:${formattedSeconds}.${formattedMilliseconds}`;
+    }
+
+    function startTimer() {
+      startTime = Date.now() - elapsedTime;
+      timerInterval = setInterval(() => {
+        elapsedTime = Date.now() - startTime;
+        document.getElementById('display').textContent = formatTime(elapsedTime);
+      }, 10); // Atualiza a cada 10ms
+    }
+
+    function stopTimer() {
+      clearInterval(timerInterval);
+    }
+
+    function resetTimer() {
+      clearInterval(timerInterval);
+      elapsedTime = 0;
+      document.getElementById('display').textContent = "00:00:00.000";
+    }
+
+    document.getElementById('start').addEventListener('click', startTimer);
+    document.getElementById('stop').addEventListener('click', stopTimer);
+    document.getElementById('reset').addEventListener('click', resetTimer);
+  </script>
+</body>
+</html>
+
+Como funciona:
+HTML: Cria uma interface simples com um display para o cronômetro e botões para iniciar, parar e resetar.
+JavaScript:
+Usa Date.now() para calcular o tempo decorrido.
+Atualiza o display a cada 10ms para incluir milissegundos.
+Formata o tempo em horas, minutos, segundos e milissegundos.
+Como testar:
+Copie o código acima e cole em um arquivo .html.
+Abra o arquivo no navegador.
+Clique nos botões para iniciar, parar e resetar o cronômetro.
+
+Se precisar de algo mais ou quiser personalizar o cronômetro, é só avisar! 😊
