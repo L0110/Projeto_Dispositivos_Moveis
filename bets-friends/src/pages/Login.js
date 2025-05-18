@@ -21,6 +21,7 @@ export default function Login() {
         alert('E-mail ou senha inválidos');
       }
     }
+  
 
   const entrar = () =>{
    
@@ -34,7 +35,7 @@ export default function Login() {
    
 
     <View style={styles.container}>
-    <View style={styles.container}>
+    <View style={styles.logoContainer}>
     
     <StatusBar hidden/>
 
@@ -59,24 +60,29 @@ export default function Login() {
     </View>
 
     <TouchableOpacity onPress={entrar} style={styles.btnEntrar}>
-    <Text style={styles.textoBotao} id='validarLogin' className='btnEntrar'>Entrar</Text>
+    <Text style={styles.textoBotao}>Entrar</Text>
     </TouchableOpacity>
 
     <View style={styles.googleContainer}>
-      <Text style={styles.textoEsqueci}>Esqueci  a senha</Text>
-      <Text style={styles.textoEsqueci}>Criar conta</Text>
-      <Text style={styles.textoEsqueci}>Entrar com:</Text> 
+      <Text style={styles.textoEsqueci}>Esqueceu a senha? Entre com</Text> 
       </View>
+
+
 
       <View style={styles.imageContainer}>
       <Image source={google} style={styles.google}/>
       <Image source={meta} style={styles.meta}/>
       </View>
 
-    <View style={styles.footer}>
+      <View style={styles.termosContainer}>
+      
+      <Text style={styles.textotermo}>Ao entrar ,você concordar com os termos de uso e os termos de privacidade
+      </Text>
+      </View>
 
-    <Text style={styles.textoEsqueci}>Aceito os Termos de uso</Text>
-    </View>
+       
+    
+
     </View>
     </View>
   );
@@ -85,47 +91,75 @@ export default function Login() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
     backgroundColor: 'white',
-    alignContent:'center',
-    padding:20,
-    alignItems:'center',
-  },
-  header:{
+    padding:30,
     alignItems:'center',
     justifyContent:'center',
-  },
-  senha1:{
-    width:40,
-    height:40,
-  },
-  imageContainer:{
-    width:90,
-    height:90,
+   // transform: [{ scale: 0.8 }]
+    
+    
+
+      },
+      header:{
+        alignItems:'center',
+        padding:10,
+       
+        
+  
+      
+        
+
+      },
+      senha1:{
+        width:40,
+        height:40,
+       
+      },
+      imageContainer:{
+        width:90,
+        height:90,
     alignSelf:'center',
     flexDirection:'row',
     alignItems:'center',
     gap:20,
-  },
-  email1:{
-    width:40,
-    height:40,
-    alignContent:'center',
-    alignItems:'center',
-  },  
-  inputContainer:{
-    flexDirection:'row',
-    alignItems:'center',
-    paddingHorizontal:10,
-    marginBottom:10,
-    height:50,
-    width:'100%',
-  },
-  googleContainer:{
-    flexDirection:'row',
-    alignItems:'center',
-    justifyContent:'center',
-  },
+    
+
+
+      },
+      termosContainer:{
+       
+        alignItems:'center',
+        flexDirection:'row',
+        gap:10,
+        flex:0.9,
+      
+        
+        
+        
+        
+        
+      },
+   
+      
+      email1:{
+        width:40,
+        height:40,
+        alignContent:'center',
+        alignItems:'center',
+      },  
+       inputContainer:{
+        flexDirection:'row',
+        alignItems:'center',
+        paddingHorizontal:10,
+        marginBottom:17,
+        height:50,
+        width:'100%',
+      },
+      googleContainer:{
+        flexDirection:'row',
+        alignItems:'center',
+        justifyContent:'center',
+      },
   textInput:{
     flex:1,
     fontSize:16,
@@ -135,15 +169,22 @@ const styles = StyleSheet.create({
     backgroundColor:'#dcdcdc',
     paddingLeft:10,
     marginBottom:10,
-    height:50 
+    height:50,
+    
+    
+ 
+   
   },
   btnEntrar:{
     width:'100%',
-    height:70,
+    height:50,
     backgroundColor:'white',
-    borderRadius:20,
+    borderRadius:0,
     justifyContent:'center',
     textAlign:'center',
+
+    
+    
   },
   textoBotao:{
     color:'black',
@@ -154,6 +195,8 @@ const styles = StyleSheet.create({
     height:35,
     textAlign:'center',
     alignContent:'center',
+    
+
   },
   logo2:{
     width:200,
@@ -166,10 +209,13 @@ const styles = StyleSheet.create({
     fontWeight:'bold',
     color:'#ffd700',
     textAlign:'center',
-    marginBottom:'100%',
+    marginBottom:100,
     alignItems:'center',
-    borderRadius:'100%',
+    borderRadius:100,
+  
   },
+
+ 
   textoEsqueci:{
     marginTop:10,
     justifyContent:'center',
@@ -177,5 +223,9 @@ const styles = StyleSheet.create({
     flexDirection:'row',
     alignItems:'center',
     gap:6,
-  },
+
+  }
+
+
+
 });
