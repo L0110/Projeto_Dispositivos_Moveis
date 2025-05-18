@@ -105,23 +105,23 @@ const styles = StyleSheet.create({
     import { Image } from 'expo-image';
     
     
-    import Arvore from '@/src/Pages/Arvore_classificacao';
-    import Configuracoes from '@/src/Pages/Configuracoes';
-    import inicio from '@/src/Pages/Home';
+    import Arvore from '@/src/pages/Arvore_classificacao';
+    import Configuracoes from '@/src/pages/Configuracoes';
+    import inicio from '@/src/pages/Home';
     import Login from '@/src/pages/Login';
-    import Nova_conta from '@/src/Pages/Nova_conta';
-    import Perfil from '@/src/Pages/Perfil';
-    import Ranking from '@/src/Pages/Ranking';
-    import Selecao_jogos from '@/src/Pages/Selecao_jogos';
+    import Nova_conta from '@/src/pages/Nova_conta';
+    import Perfil from '@/src/pages/Perfil';
+    import Ranking from '@/src/pages/Ranking';
+    import Selecao_jogos from '@/src/pages/Selecao_jogos';
     import Carteira from '@/src/Pages/loja/Carteira';
-    import Loja from '@/src/Pages/loja/Loja';
-    import Game01 from '@/src/Pages/jogos/Game01';
-    import Game02 from '@/src/Pages/jogos/Game02';
-    import Game03 from '@/src/Pages/jogos/Game03';
-    import Game04 from '@/src/Pages/jogos/Game04';
-    import Derrota from '@/src/Pages/fim_jogo/Derrota';
-    import Vitoria from '@/src/Pages/fim_jogo/Vitoria';
-    import Empate from '@/src/Pages/fim_jogo/Empate';
+    import Loja from '@/src/pages/loja/Loja';
+    import Game01 from '@/src/pages/jogos/Game01';
+    import Game02 from '@/src/pages/jogos/Game02';
+    import Game03 from '@/src/pages/jogos/Game03';
+    import Game04 from '@/src/pages/jogos/Game04';
+    import Derrota from '@/src/pages/fim_jogo/Derrota';
+    import Vitoria from '@/src/pages/fim_jogo/Vitoria';
+    import Empate from '@/src/pages/fim_jogo/Empate';
     
     
 
@@ -139,8 +139,8 @@ const App = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        <Stack.Screen name="Login" component={Login} />
-        <Stack.Screen name="Home" component={Inicio} />
+        <Stack.Screen name="Game02" component={Game02} />
+
       </Stack.Navigator>
     </NavigationContainer>
   );
