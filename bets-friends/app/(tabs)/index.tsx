@@ -51,7 +51,7 @@ const App = () => {
     /*<Stack.Screen name="Home" component={Home} />*/
     
       <Stack.Navigator>
-        <Stack.Screen name="Game02" component={Game02} />
+        <Stack.Screen name="Game01" component={Game01} />
       </Stack.Navigator>
   
 
