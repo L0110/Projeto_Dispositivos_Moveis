@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  .box {
+    width: 100px;
+    height: 100px;
+    background-color: lightblue;
+    margin: 20px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: Arial;
+  }
+</style>
+</head>
+<body>
+
+<div class="box" id="expansivel">Clique para aumentar</div>
+
+<script>
+  const box = document.getElementById('expansivel');
+  const maxSize = 500; // Tamanho máximo em pixels
+  
+  box.addEventListener('click', function() {
+    const currentWidth = parseInt(getComputedStyle(this).width);
+    const currentHeight = parseInt(getComputedStyle(this).height);
+    
+    // Verifica se já atingiu o tamanho máximo
+    if(currentWidth < maxSize) {
+      const newSize = currentWidth + 10;
+      this.style.width = newSize + 'px';
+      this.style.height = newSize + 'px';
+      this.textContent = `Tamanho: ${newSize}px`;
+    } else {
+      this.textContent = "Tamanho máximo atingido!";
+    }
+  });
+</script>
+
+</body>
+</html>

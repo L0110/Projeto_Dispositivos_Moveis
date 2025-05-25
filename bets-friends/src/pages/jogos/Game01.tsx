@@ -128,7 +128,7 @@ export default function Game01() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,//Ocupa todo o espaco disponivel na tela
-    backgroundColor: '#101010',//cor de fundo
+    backgroundColor: '#f3f4f0',//cor de fundo
     alignItems: 'center',//centraliza os itens horizontalmente
     justifyContent: 'center',//centraliza os items verticamente
     padding: 20,//Espaçamento interno nas bordas do caontainer
