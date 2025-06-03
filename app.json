@@ -12,6 +12,9 @@
       "url": "https://u.expo.dev/af116563-d826-4ea4-971e-f281e3841dfd"
     },
     "android": {},
-    "ios": {}
+    "ios": {},
+    "plugins": [
+      "expo-sqlite"
+    ]
   }
 }

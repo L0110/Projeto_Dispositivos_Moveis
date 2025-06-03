@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { DatabaseConnection } from '@/src/database/database-connection';
+const db = DatabaseConnection.getConnection();
 
 // Tipos
 type Word = {
@@ -34,7 +36,7 @@ const App = () => {
   const [opponentChoice, setOpponentChoice] = useState<RPSChoice>(null);
   const [winner, setWinner] = useState<Winner>(null);
   const [wrongAttempts, setWrongAttempts] = useState<number>(0);
-  const [gameOver, setGameOver] = useState<boolean>(false);
+  // Removido: gameOver não é utilizado
   const [player1Score, setPlayer1Score] = useState<number>(0);
   const [player2Score, setPlayer2Score] = useState<number>(0);
 
@@ -49,7 +51,7 @@ const App = () => {
     setRpsChoice(null);
     setOpponentChoice(null);
     setWinner(null);
-    setGameOver(false);
+    // Removido: setGameOver(false); não é necessário
     setCurrentPlayer(prev => (prev === 1 ? 2 : 1));
   };
 
@@ -160,7 +162,26 @@ const App = () => {
   };
 
   const endGame = (wordCompleted: boolean) => {
-    setGameOver(true);
+    // Removido: setGameOver(true); não é necessário
+
+    // Defina os valores conforme sua lógica
+    const usuarioId = 1; // Substitua pelo ID real do usuário
+    const oponenteId = 2; // Substitua pelo ID real do oponente
+    const valorAposta = betAmount;
+    const valorGanho = wordCompleted ? betAmount : 0;
+    const valorPerdido = wordCompleted ? 0 : betAmount;
+    const pontuacaoUsuario = wordCompleted ? player1Score + 1 : player1Score;
+    const pontuacaoOponente = wordCompleted ? player2Score : player2Score + 1;
+
+    salvarResultado(
+      usuarioId,
+      oponenteId,
+      valorAposta,
+      valorGanho,
+      valorPerdido,
+      pontuacaoUsuario,
+      pontuacaoOponente
+    );
 
     if (wordCompleted) {
       if (currentPlayer === 1) {
@@ -175,7 +196,7 @@ const App = () => {
         [{ text: "Jogar Novamente", onPress: startNewGame }]
       );
     } else {
-      const opponent = currentPlayer === 1 ? 2 : 1;
+      // Removido: opponent não é utilizado
       if (currentPlayer === 1) {
         setPlayer2Score(player2Score + 1);
       } else {
@@ -188,6 +209,33 @@ const App = () => {
         [{ text: "Jogar Novamente", onPress: startNewGame }]
       );
     }
+  };
+
+  const salvarResultado = (
+    usuarioId: number,
+    oponenteId: number,
+    valorAposta: number,
+    valorGanho: number,
+    valorPerdido: number,
+    pontuacaoUsuario: number,
+    pontuacaoOponente: number
+  ): void => {
+    // Use executeSql diretamente se transaction não existir em db
+    db.transaction((tx: any) => {
+      tx.executeSql(
+        `INSERT INTO table_partida 
+          (idUsuario, idOponente, valorAposta, valorGanho, valorPerdido, pontuacaoUsuario, pontuacaoOponente) 
+          VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        [usuarioId, oponenteId, valorAposta, valorGanho, valorPerdido, pontuacaoUsuario, pontuacaoOponente],
+        () => {
+          console.log('Resultado salvo com sucesso!');
+        },
+        (_: unknown, error: any) => {
+          console.log('Erro ao salvar resultado:', error);
+          return false;
+        }
+      );
+    });
   };
 
   const renderWord = () => {
@@ -290,254 +338,6 @@ const App = () => {
       )}
     </View>
   );
-};
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f0f8ff',
-    padding: 20,
-  },
-  header: {
-    marginBottom: 20,
-    alignItems: 'center',
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#2c3e50',
-  },
-  scoresContainer: {
-    marginTop: 10,
-  },
-  playerScore: {
-    fontSize: 16,
-    color: '#34495e',
-  },
-  stageContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  stageTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 15,
-    color: '#2c3e50',
-  },
-  coinsText: {
-    fontSize: 16,
-    marginBottom: 20,
-    color: '#16a085',
-  },
-  betButtonsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    width: '100%',
-    marginBottom: 20,
-  },
-  betButton: {
-    backgroundColor: '#3498db',
-    padding: 15,
-    borderRadius: 10,
-    width: 80,
-    alignItems: 'center',
-  },
-  betButtonText: {
-    color: 'white',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  betConfirmation: {
-    fontSize: 18,
-    color: '#27ae60',
-    fontWeight: 'bold',
-    marginTop: 10,
-  },
-  rpsSubtitle: {
-    fontSize: 16,
-    marginBottom: 30,
-    color: '#7f8c8d',
-  },
-  rpsButtonsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    width: '100%',
-    marginBottom: 30,
-  },
-  rpsButton: {
-    backgroundColor: '#9b59b6',
-    padding: 20,
-    borderRadius: 50,
-    width: 80,
-    height: 80,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  rpsButtonText: {
-    fontSize: 30,
-  },
-  rpsResults: {
-    marginTop: 20,
-    alignItems: 'center',
-  },
-  rpsChoice: {
-    fontSize: 18,
-    marginBottom: 5,
-  },
-  rpsWinner: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#e74c3c',
-    marginTop: 10,
-  },
-  categoryText: {
-    fontSize: 18,
-    fontStyle: 'italic',
-    marginBottom: 20,
-    color: '#16a085',
-  },
-  wordContainer: {
-    flexDirection: 'row',
-    marginBottom: 30,
-  },
-  letterContainer: {
-    marginHorizontal: 5,
-    borderBottomWidth: 2,
-    borderBottomColor: '#2c3e50',
-    width: 30,
-    alignItems: 'center',
-  },
-  letter: {
-    fontSize: 24,
-    fontWeight: 'bold',
-  },
-  hangmanContainer: {
-    width: 200,
-    height: 250,
-    marginBottom: 30,
-    position: 'relative',
-  },
-  hangmanBase: {
-    position: 'absolute',
-    bottom: 0,
-    left: 50,
-    width: 100,
-    height: 10,
-    backgroundColor: '#2c3e50',
-  },
-  hangmanPole: {
-    position: 'absolute',
-    bottom: 0,
-    left: 80,
-    width: 10,
-    height: 200,
-    backgroundColor: '#2c3e50',
-  },
-  hangmanTop: {
-    position: 'absolute',
-    top: 0,
-    left: 80,
-    width: 80,
-    height: 10,
-    backgroundColor: '#2c3e50',
-  },
-  hangmanRope: {
-    position: 'absolute',
-    top: 10,
-    left: 160,
-    width: 2,
-    height: 30,
-    backgroundColor: '#2c3e50',
-  },
-  hangmanHead: {
-    position: 'absolute',
-    top: 40,
-    left: 150,
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    borderWidth: 2,
-    borderColor: '#2c3e50',
-  },
-  hangmanBody: {
-    position: 'absolute',
-    top: 70,
-    left: 162,
-    width: 6,
-    height: 60,
-    backgroundColor: '#2c3e50',
-  },
-  hangmanLeftArm: {
-    position: 'absolute',
-    top: 80,
-    left: 142,
-    width: 20,
-    height: 6,
-    backgroundColor: '#2c3e50',
-    transform: [{ rotate: '-30deg' }],
-  },
-  hangmanRightArm: {
-    position: 'absolute',
-    top: 80,
-    left: 168,
-    width: 20,
-    height: 6,
-    backgroundColor: '#2c3e50',
-    transform: [{ rotate: '30deg' }],
-  },
-  hangmanLeftLeg: {
-    position: 'absolute',
-    top: 130,
-    left: 142,
-    width: 20,
-    height: 6,
-    backgroundColor: '#2c3e50',
-    transform: [{ rotate: '-30deg' }],
-  },
-  hangmanRightLeg: {
-    position: 'absolute',
-    top: 130,
-    left: 168,
-    width: 20,
-    height: 6,
-    backgroundColor: '#2c3e50',
-    transform: [{ rotate: '30deg' }],
-  },
-  alphabetContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    marginTop: 20,
-  },
-  letterButton: {
-    width: 40,
-    height: 40,
-    margin: 5,
-    backgroundColor: '#3498db',
-    borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  usedLetter: {
-    backgroundColor: '#bdc3c7',
-  },
-  letterButtonText: {
-    color: 'white',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  newGameButton: {
-    backgroundColor: '#2ecc71',
-    padding: 15,
-    borderRadius: 10,
-    alignItems: 'center',
-    marginTop: 20,
-  },
-  newGameButtonText: {
-    color: 'white',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-});
+}
 
 export default App;

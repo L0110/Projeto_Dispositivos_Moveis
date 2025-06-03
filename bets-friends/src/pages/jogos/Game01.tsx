@@ -10,10 +10,25 @@ Jogo de quem aperta mais vezes o botão em 10 segundos
 import React, { useState, useEffect, useRef } from 'react';
 import { Alert } from 'react-native';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+// Importação da conexão com o banco de dados
+import { DatabaseConnection } from '@/src/database/database-connection';
 
+const db = DatabaseConnection.getConnection();
 
+import type { StackNavigationProp } from '@react-navigation/stack';
 
-export default function Game01() {
+type RootStackParamList = {
+  Vitoria: undefined;
+  Derrota: undefined;
+  Empate: undefined;
+  // Adicione outras rotas aqui se necessário
+};
+
+type Game01Props = {
+  navigation: StackNavigationProp<RootStackParamList>;
+};
+
+export default function Game01({ navigation }: Game01Props) {
   const [timeLeft, setTimeLeft] = useState(10);//Estado para controlar o tempo restante do jogo
   const [player1Count, setPlayer1Count] = useState(0);//Estado para armazenar a contagem de cliques
   const [player2Count, setPlayer2Count] = useState(0);
@@ -23,6 +38,8 @@ export default function Game01() {
   const [hiderPlayer2, setHidePlayer2] = useState(false);
   const intervalRef = useRef<number | null>(null);//Referencia para armazenar o interfalo do time(setInterval)
   const [selectedPlayer, setSelectedPlayer] = useState<null | 1 | 2>(null);//null,1 ou 2
+  const [buttonSize, setButtonSize] = useState(100); // tamanho inicial em pixels
+  const maxButtonSize = 300; // tamanho máximo desejado
 
   const startGame = () => {
     //reinicia os pontos dos jogadores
@@ -66,6 +83,57 @@ export default function Game01() {
     return 'Empate!';//Se os dois tiverem o mesmo numero de toque,da empate
   };
 
+  // Função para salvar resultado
+  const salvarResultado = (
+    usuarioId: number,
+    oponenteId: number,
+    valorAposta: number,
+    valorGanho: number,
+    valorPerdido: number,
+    pontuacaoUsuario: number,
+    pontuacaoOponente: number
+  ): void => {
+    db.transaction(tx => {
+      tx.executeSql(
+        `INSERT INTO table_partida 
+          (idUsuario, idOponente, valorAposta, valorGanho, valorPerdido, pontuacaoUsuario, pontuacaoOponente) 
+          VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        [usuarioId, oponenteId, valorAposta, valorGanho, valorPerdido, pontuacaoUsuario, pontuacaoOponente],
+        () => {
+          console.log('Resultado salvo com sucesso!');
+        },
+        (_: unknown, error: any) => {
+          console.log('Erro ao salvar resultado:', error);
+          return false;
+        }
+      );
+    });
+  };
+
+  useEffect(() => {
+    if (!isPlaying && timeLeft === 0) {
+      const usuarioId = 1; // Substitua pelo ID real do usuário
+      const oponenteId = 2; // Substitua pelo ID real do oponente, se houver
+      const valorAposta = 10; // Substitua pelo valor da aposta
+      const valorGanho = player1Count > player2Count ? 10 : 0;
+      const valorPerdido = player1Count < player2Count ? 10 : 0;
+      const pontuacaoUsuario = player1Count;
+      const pontuacaoOponente = player2Count;
+
+      salvarResultado(usuarioId, oponenteId, valorAposta, valorGanho, valorPerdido, pontuacaoUsuario, pontuacaoOponente);
+
+      // Navegar para a tela de resultado com base no vencedor
+      const winner = getWinner();
+      if (winner === 'Jogador 1 venceu!') {
+        navigation.navigate('Vitoria');
+      } else if (winner === 'Jogador 2 venceu!') {
+        navigation.navigate('Derrota');
+      } else {
+        navigation.navigate('Empate');
+      }
+    }
+  }, [isPlaying, timeLeft]);
+
   return (
     //container principal da tela
     <View style={styles.container}>
@@ -75,15 +143,20 @@ export default function Game01() {
         {!hiderPlayer1 && (
           <TouchableOpacity
             disabled={isPlaying && selectedPlayer !== 1}
-            style={styles.playerButton1}
+            style={[
+              styles.playerButton1,
+              { width: buttonSize, height: buttonSize }
+            ]}
             onPress={() => {
               if (!isPlaying) {
-                setSelectedPlayer(1);//Esolhe o jogador1
-                setHidePlayer2(true);//esconde o jogador 2 na hora da escolha
+                setSelectedPlayer(1);
+                setHidePlayer2(true);
                 Alert.alert('Você escolheu o jogador 1');
               } else {
                 setPlayer1Count(player1Count + 1);
-                setHidePlayer2(true);//esconde o jogador2
+                setHidePlayer2(true);
+                // Aumenta o tamanho do botão até o máximo
+                setButtonSize((prev) => (prev < maxButtonSize ? prev + 10 : prev));
               }
             }}
           >
