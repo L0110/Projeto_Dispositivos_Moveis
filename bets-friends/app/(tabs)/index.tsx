@@ -48,6 +48,7 @@ const Stack = createStackNavigator();
 const App = () => {
   return (
     /*<Stack.Screen name="Home" component={Home} />*/
+<<<<<<< HEAD
     <NavigationContainer theme={DefaultTheme}>
       <Stack.Navigator initialRouteName="Login" screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Login" component={Login} />
@@ -68,6 +69,11 @@ const App = () => {
         {/* <Stack.Screen name="Empate" component={React.memo(Empate)} /> */}
         {/* <Stack.Screen name="Vitoria" component={React.memo(Vitoria)} /> */}
 
+=======
+    
+      <Stack.Navigator>
+        <Stack.Screen name="Home" component={Home} />
+>>>>>>> parent of 222da38 (Inclusao Game03)
       </Stack.Navigator>
     </NavigationContainer>
   /*<SafeAreaView style={styles.container}>
