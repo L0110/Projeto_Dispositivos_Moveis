@@ -48,7 +48,6 @@ const Stack = createStackNavigator();
 const App = () => {
   return (
     /*<Stack.Screen name="Home" component={Home} />*/
-<<<<<<< HEAD
     <NavigationContainer theme={DefaultTheme}>
       <Stack.Navigator initialRouteName="Login" screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Login" component={Login} />
@@ -60,20 +59,15 @@ const App = () => {
         {/* <Stack.Screen name="Ranking" component={Ranking} /> */}
         {/* <Stack.Screen name="Loja" component={React.memo(Loja)} /> */}
         {/* <Stack.Screen name="Carteira" component={React.memo(Carteira)} /> */}
-        <Stack.Screen name="SelecaoJogos" component={React.memo(Selecao_jogos)} />
-        <Stack.Screen name="Game01" component={React.memo(Game01)} />
-        <Stack.Screen name="Game02" component={React.memo(Game02)} />
-        <Stack.Screen name="Game03" component={React.memo(Game03)} />
+        <Stack.Screen name="SelecaoJogos" component={Selecao_jogos} />
+        <Stack.Screen name="Game01" component={Game01} />
+        <Stack.Screen name="Game02" component={Game02} />
+        <Stack.Screen name="Game03" component={Game03} />
         {/* <Stack.Screen name="Game04" component={React.memo(Game04)} /> */}
         {/* <Stack.Screen name="Derrota" component={React.memo(Derrota)} /> */}
         {/* <Stack.Screen name="Empate" component={React.memo(Empate)} /> */}
         {/* <Stack.Screen name="Vitoria" component={React.memo(Vitoria)} /> */}
 
-=======
-    
-      <Stack.Navigator>
-        <Stack.Screen name="Home" component={Home} />
->>>>>>> parent of 222da38 (Inclusao Game03)
       </Stack.Navigator>
     </NavigationContainer>
   /*<SafeAreaView style={styles.container}>

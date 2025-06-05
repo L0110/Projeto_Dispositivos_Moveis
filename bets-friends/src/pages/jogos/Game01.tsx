@@ -7,7 +7,7 @@ Jogo de quem aperta mais vezes o botão em 10 segundos
 - Tela de configurações com opções de som, notificações e tema
 */
 import { Ionicons } from '@expo/vector-icons';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, JSX } from 'react';
 import { Alert, Animated, Dimensions, Easing, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');

@@ -1,7 +1,6 @@
 import {StatusBar} from 'expo-status-bar';
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text,Image, View, TextInput,TouchableOpacity } from 'react-native';
-import { db } from '@/src/database/database-connection'; // Importe seu objeto de banco de dados aqui
 
 
 export default function Login() {
@@ -29,32 +28,6 @@ export default function Login() {
    alert(senha);
    //Fazer chamada no back end para cadastro
   };
-
-  useEffect(() => {
-    db.transaction(function (txn) {
-      txn.executeSql(
-        "SELECT name FROM sqlite_master WHERE type='table' AND name='table_usuario'",
-        [],
-        function (tx, res) {
-          if (res.rows.length === 0) {
-            txn.executeSql(
-              'CREATE TABLE IF NOT EXISTS table_usuario (idUsuario INTEGER PRIMARY KEY AUTOINCREMENT, nome TEXT NOT NULL, sobrenome TEXT NOT NULL, email TEXT UNIQUE NOT NULL, telefone TEXT, cpf TEXT UNIQUE, dataNascimento DATE, saldoCarteira REAL DEFAULT 0.00)'
-            );
-            txn.executeSql(
-              'CREATE TABLE IF NOT EXISTS table_loja (idProduto INTEGER PRIMARY KEY AUTOINCREMENT, nomeProduto TEXT NOT NULL, valorProduto REAL NOT NULL)'
-            );
-            txn.executeSql(
-              'CREATE TABLE IF NOT EXISTS table_partida (idPartida INTEGER PRIMARY KEY AUTOINCREMENT, idUsuario INTEGER NOT NULL, idOponente INTEGER NOT NULL, valorAposta REAL DEFAULT 0.00, valorGanho REAL DEFAULT 0.00, valorPerdido REAL DEFAULT 0.00, pontuacaoUsuario INTEGER DEFAULT 0, pontuacaoOponente INTEGER DEFAULT 0, dataPartida DATETIME DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (idUsuario) REFERENCES table_usuario(idUsuario), FOREIGN KEY (idOponente) REFERENCES table_usuario(idUsuario))'
-            );
-            txn.executeSql(
-              'CREATE TABLE IF NOT EXISTS table_pontuacao (idPontuacao INTEGER PRIMARY KEY AUTOINCREMENT, idUsuario INTEGER NOT NULL, pontuacao INTEGER DEFAULT 0, dataAtualizacao DATETIME DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (idUsuario) REFERENCES table_usuario(idUsuario))'
-            );
-            console.log('🆗 Tabelas criadas com sucesso');
-          }
-        }
-      );
-    });
-  }, []);
 
   return(
 
@@ -90,7 +63,7 @@ export default function Login() {
     </TouchableOpacity>
 
     <View style={styles.googleContainer}>
-      <Text style={styles.textoEsqueci}>Esqueceu a senha? Entre com</Text> 
+      <Text style={styles.textoEsqueci}>Esqueceu a senha? Entre com:</Text> 
       </View>
 
 

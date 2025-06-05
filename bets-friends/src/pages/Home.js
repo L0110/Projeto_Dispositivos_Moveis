@@ -13,33 +13,13 @@ Tela principal do aplicativo:
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-
-import { DatabaseConnection } from '../database/database-connection';
-const db = DatabaseConnection.getConnection();
+import { useNavigation } from '@react-navigation/native';
 
 // Importando o banco de dados
 
-const HomeScreen = ({ navigation }) => {
-  useEffect(() => {
-    db.transaction(function (txn) {
-      txn.executeSql(
-        "SELECT name FROM sqlite_master WHERE type='table' AND name='table_multa'",
-        [],
-        function (tx, res) {
-          console.log('item:', res.rows.length);
-          if (res.rows.length == 0) {
-            txn.executeSql('DROP TABLE IF EXISTS table_multa', []);
-            txn.executeSql(
-              'CREATE TABLE IF NOT EXISTS table_multa(user_id INTEGER PRIMARY KEY AUTOINCREMENT, user_name VARCHAR(20), user_multa VARCHAR(100),user_contact VARCHAR(100), user_INFRACAO VARCHAR(255))',
-              []
-            );
-          }
-        }
-      );
-    });
-  }, []);
+const Home = ({ navigation }) => {
 
-export default function Home() {
+
     return (
         <View style={styles.container}>
             <StatusBar hidden/>
@@ -54,12 +34,14 @@ export default function Home() {
                 <Text>Iniciar Partida</Text>
             </TouchableOpacity>
             <TouchableOpacity>
-                <Text>Loja</Text>
+      ;          <Text>Loja</Text>
             </TouchableOpacity>
         </View>
     );
 
 }
+
+export default Home;
 
 const styles = StyleSheet.create({
     container: {

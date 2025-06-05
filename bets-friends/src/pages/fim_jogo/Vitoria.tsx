@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Image, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { DatabaseConnection } from '@/src/database/database-connection'; // Importe a conexão com o banco de dados
 
 // Defina o tipo dos dados recebidos da API
 type DadosResultado = {
@@ -18,47 +17,6 @@ export default function ResultadoJogo() {
 
   // Importe o database do arquivo database-connection.tsx
 
-  useEffect(() => {
-    const fetchResultado = async () => {
-      try {
-        // Exemplo de consulta: ajuste o nome da tabela e os campos conforme seu banco
-        const db = DatabaseConnection.getConnection();
-        db.transaction(tx => {
-          tx.executeSql(
-            'SELECT valorGanho, resultado, usuario, valorApostado FROM resultados ORDER BY id DESC LIMIT 1',
-            [],
-            (_: any, results: any) => {
-              if (results.rows.length > 0) {
-                const row = results.rows.item(0);
-                setDados({
-                valorGanho: row.valorGanho,
-                resultado: row.resultado,
-                usuario: row.usuario,
-                valorApostado: row.valorApostado,
-              });
-            } else {
-              setDados(null);
-            }
-            setCarregando(false);
-          },
-          (_: any, error: Error) => {
-            setDados(null);
-            setCarregando(false);
-            return false;
-          }
-          );
-        });
-        return;
-      } catch (error) {
-        console.error('Erro ao buscar resultado:', error);
-        setDados(null);
-        setDados(null);
-      } finally {
-        setCarregando(false);
-      }
-    };
-    fetchResultado();
-  }, []);
 
   if (carregando) {
     return (

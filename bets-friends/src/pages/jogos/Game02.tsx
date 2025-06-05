@@ -1,9 +1,9 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Animated, Modal, Dimensions, } from 'react-native';
-import { DatabaseConnection } from '@/src/database/database-connection';
+
 
 const { width, height } = Dimensions.get('window');
-const db = DatabaseConnection.getConnection();
+
 
 const formatTime = (ms: number) => {
   const minutes = Math.floor(ms / 60000);
@@ -80,16 +80,6 @@ const Game02: React.FC<Props> = ({ navigation }) => {
     }
     setShowModal(true);
 
-    // Salvar resultado no banco de dados
-    const usuarioId = 1; // Substitua pelo ID real do usuário
-    const oponenteId = 2; // Substitua pelo ID real do oponente, se houver
-    const valorAposta = 10; // Substitua pelo valor da aposta
-    const valorGanho = result === 'vitória' ? 10 : 0;
-    const valorPerdido = result === 'derrota' ? 10 : 0;
-    const pontuacaoUsuario = clickedTime; // ou outro critério
-    const pontuacaoOponente = 0; // ou outro critério
-
-    salvarResultado(usuarioId, oponenteId, valorAposta, valorGanho, valorPerdido, pontuacaoUsuario, pontuacaoOponente);
   };
 
   const triggerConfetti = () => {
@@ -115,31 +105,7 @@ const Game02: React.FC<Props> = ({ navigation }) => {
     confettiY.forEach((val) => val.setValue(-50));
   };
 
-  const salvarResultado = (
-    usuarioId: number,
-    oponenteId: number,
-    valorAposta: number,
-    valorGanho: number,
-    valorPerdido: number,
-    pontuacaoUsuario: number,
-    pontuacaoOponente: number
-  ): void => {
-    db.transaction(tx => {
-      tx.executeSql(
-        `INSERT INTO table_partida 
-          (idUsuario, idOponente, valorAposta, valorGanho, valorPerdido, pontuacaoUsuario, pontuacaoOponente) 
-          VALUES (?, ?, ?, ?, ?, ?, ?)`,
-        [usuarioId, oponenteId, valorAposta, valorGanho, valorPerdido, pontuacaoUsuario, pontuacaoOponente],
-        () => {
-          console.log('Resultado salvo com sucesso!');
-        },
-        (_: unknown, error: any) => {
-          console.log('Erro ao salvar resultado:', error);
-          return false;
-        }
-      );
-    });
-  };
+
 
   return (
     <View style={styles.container}>
