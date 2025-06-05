@@ -6,258 +6,424 @@ Jogo de quem aperta mais vezes o botão em 10 segundos
 - Tela de ranking com os melhores resultados
 - Tela de configurações com opções de som, notificações e tema
 */
+import { Ionicons } from '@expo/vector-icons';
+import React, { useEffect, useRef, useState } from 'react';
+import { Alert, Animated, Dimensions, Easing, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import React, { useState, useEffect, useRef } from 'react';
-import { Alert } from 'react-native';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-// Importação da conexão com o banco de dados
-import { DatabaseConnection } from '@/src/database/database-connection';
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const BUTTON_WIDTH = SCREEN_WIDTH * 0.45;
 
-const db = DatabaseConnection.getConnection();
+// Tipos auxiliares
+type Player = 1 | 2 | null;
+type GameResult = string | null;
 
-import type { StackNavigationProp } from '@react-navigation/stack';
+export default function App(): JSX.Element {
+  // Estados do jogo
+  const [timeLeft, setTimeLeft] = useState<number>(10);
+  const [player1Count, setPlayer1Count] = useState<number>(0);
+  const [player2Count, setPlayer2Count] = useState<number>(0);
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [selectedPlayer, setSelectedPlayer] = useState<Player>(null);
+  const [gameResult, setGameResult] = useState<GameResult>(null);
+  const [player1Wins, setPlayer1Wins] = useState<number>(0);
+  const [player2Wins, setPlayer2Wins] = useState<number>(0);
+  const [showButton, setShowButton] = useState<boolean>(true);
+  
+  // Animações
+  const player1Position = useRef<Animated.Value>(new Animated.Value(0)).current;
+  const player2Position = useRef<Animated.Value>(new Animated.Value(0)).current;
 
-type RootStackParamList = {
-  Vitoria: undefined;
-  Derrota: undefined;
-  Empate: undefined;
-  // Adicione outras rotas aqui se necessário
-};
+  // Referências
+  const intervalRef = useRef<number | null>(null);
+  const gameEndedRef = useRef<boolean>(false);
+  const player1CountRef = useRef<number>(0);
+  const player2CountRef = useRef<number>(0);
 
-type Game01Props = {
-  navigation: StackNavigationProp<RootStackParamList>;
-};
+  // Limpar intervalo ao desmontar
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, []);
 
-export default function Game01({ navigation }: Game01Props) {
-  const [timeLeft, setTimeLeft] = useState(10);//Estado para controlar o tempo restante do jogo
-  const [player1Count, setPlayer1Count] = useState(0);//Estado para armazenar a contagem de cliques
-  const [player2Count, setPlayer2Count] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false);//Estado booleano para saber se o jogo esta em andamento
-  const [showButton, setShowButton] = useState(true);//Estado booleano para controlar a visibilidade do botao "começar"
-  const [hiderPlayer1, setHidePlayer1] = useState(false);
-  const [hiderPlayer2, setHidePlayer2] = useState(false);
-  const intervalRef = useRef<number | null>(null);//Referencia para armazenar o interfalo do time(setInterval)
-  const [selectedPlayer, setSelectedPlayer] = useState<null | 1 | 2>(null);//null,1 ou 2
-  const [buttonSize, setButtonSize] = useState(100); // tamanho inicial em pixels
-  const maxButtonSize = 300; // tamanho máximo desejado
+  const handleGoBack = (): void => {
+    Alert.alert('Voltar', 'Deseja realmente sair do jogo?', [
+      { text: 'Cancelar', style: 'cancel' },
+      { text: 'Sair', onPress: () => console.log('Sair do jogo') }
+    ]);
+  };
 
-  const startGame = () => {
-    //reinicia os pontos dos jogadores
+  const animatePlayerPosition = (player: Player, toValue: number): void => {
+    const positionAnim = player === 1 ? player1Position : player2Position;
+    
+    Animated.timing(positionAnim, {
+      toValue,
+      duration: 300,
+      easing: Easing.out(Easing.quad),
+      useNativeDriver: true
+    }).start();
+  };
+
+  const startNewGame = (): void => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+
     setPlayer1Count(0);
     setPlayer2Count(0);
+    player1CountRef.current = 0;
+    player2CountRef.current = 0;
+    setTimeLeft(10);
+    setGameResult(null);
+    setSelectedPlayer(null);
+    setIsPlaying(false);
+    gameEndedRef.current = false;
+    setShowButton(true);
+
+    animatePlayerPosition(1, 0);
+    animatePlayerPosition(2, 0);
+  };
+
+  const startMatch = (): void => {
     if (!selectedPlayer) {
-      Alert.alert('Atenção', 'Você precisa escolher um jogador antes de começar!');
+      Alert.alert('Atenção', 'Selecione um jogador primeiro!');
       return;
     }
 
-
-    setTimeLeft(10);//Reinicia o tempo para 10s
-    setShowButton(false);//Esconde o botao
-    setIsPlaying(true);//informar que o jogo começou
-
-    intervalRef.current = setInterval(() => {//A funcao setInterval executa o bloco de codigo a cada 1000 milissegundos(1 segundo)
-      setTimeLeft((prev) => { //Atualiza o estado timeLeft usando o valor anterior(prev)
-        if (prev === 1) { //Se faltar apenas 1s
-          if (intervalRef.current !== null) {
-            clearInterval(intervalRef.current);//Para o intervalo(para de executar o setInterval)
-          }
-          setIsPlaying(false);//Informar que o jogo terminou(estado para gerar o jogo)
-          setShowButton(true);//Mostra o botao apos 10s
-          setHidePlayer1(false);
-          setHidePlayer2(false);
-          Alert.alert("Tempo esgotado!", getWinner());
-
-
-          return 0;//retornar o valor final do tempo
-        }
-        return prev - 1;//Caso contrario,reduz o tempo restante em 1s
-      });
-    }, 1000);//O intervalo é executado a cada 1000 milissegundos(1s)
-  };
-
-  const getWinner = () => {//Funcao que decide quem venceu o jogo com base nas ccontagens dos jogadores
-
-    //Se o jogador e ou 2 tiver mais toque,ele vence
-    if (player1Count > player2Count) return 'Jogador 1 venceu!';
-    if (player2Count > player1Count) return 'Jogador 2 venceu!';
-    return 'Empate!';//Se os dois tiverem o mesmo numero de toque,da empate
-  };
-
-  // Função para salvar resultado
-  const salvarResultado = (
-    usuarioId: number,
-    oponenteId: number,
-    valorAposta: number,
-    valorGanho: number,
-    valorPerdido: number,
-    pontuacaoUsuario: number,
-    pontuacaoOponente: number
-  ): void => {
-    db.transaction(tx => {
-      tx.executeSql(
-        `INSERT INTO table_partida 
-          (idUsuario, idOponente, valorAposta, valorGanho, valorPerdido, pontuacaoUsuario, pontuacaoOponente) 
-          VALUES (?, ?, ?, ?, ?, ?, ?)`,
-        [usuarioId, oponenteId, valorAposta, valorGanho, valorPerdido, pontuacaoUsuario, pontuacaoOponente],
-        () => {
-          console.log('Resultado salvo com sucesso!');
-        },
-        (_: unknown, error: any) => {
-          console.log('Erro ao salvar resultado:', error);
-          return false;
-        }
-      );
-    });
-  };
-
-  useEffect(() => {
-    if (!isPlaying && timeLeft === 0) {
-      const usuarioId = 1; // Substitua pelo ID real do usuário
-      const oponenteId = 2; // Substitua pelo ID real do oponente, se houver
-      const valorAposta = 10; // Substitua pelo valor da aposta
-      const valorGanho = player1Count > player2Count ? 10 : 0;
-      const valorPerdido = player1Count < player2Count ? 10 : 0;
-      const pontuacaoUsuario = player1Count;
-      const pontuacaoOponente = player2Count;
-
-      salvarResultado(usuarioId, oponenteId, valorAposta, valorGanho, valorPerdido, pontuacaoUsuario, pontuacaoOponente);
-
-      // Navegar para a tela de resultado com base no vencedor
-      const winner = getWinner();
-      if (winner === 'Jogador 1 venceu!') {
-        navigation.navigate('Vitoria');
-      } else if (winner === 'Jogador 2 venceu!') {
-        navigation.navigate('Derrota');
-      } else {
-        navigation.navigate('Empate');
-      }
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
     }
-  }, [isPlaying, timeLeft]);
+
+    setPlayer1Count(0);
+    setPlayer2Count(0);
+    player1CountRef.current = 0;
+    player2CountRef.current = 0;
+    setTimeLeft(10);
+    setGameResult(null);
+    setIsPlaying(true);
+    gameEndedRef.current = false;
+    setShowButton(false);
+
+    if (selectedPlayer === 1) {
+      animatePlayerPosition(1, 1);
+      animatePlayerPosition(2, -1);
+    } else {
+      animatePlayerPosition(2, 1);
+      animatePlayerPosition(1, -1);
+    }
+
+    intervalRef.current = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          if (intervalRef.current) clearInterval(intervalRef.current);
+          endGame();
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  };
+
+  const endGame = (): void => {
+    if (gameEndedRef.current) return;
+    gameEndedRef.current = true;
+
+    setIsPlaying(false);
+    setShowButton(true);
+    
+    animatePlayerPosition(1, 0);
+    animatePlayerPosition(2, 0);
+
+    setTimeLeft(10);
+
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+
+    let result = '';
+    if (player1CountRef.current > player2CountRef.current) {
+      result = 'Jogador 1 venceu!';
+      setPlayer1Wins(prev => prev + 1);
+    } else if (player2CountRef.current > player1CountRef.current) {
+      result = 'Jogador 2 venceu!';
+      setPlayer2Wins(prev => prev + 1);
+    } else {
+      result = 'Empate!';
+    }
+
+    setGameResult(result);
+
+    setTimeout(() => {
+      Alert.alert('Fim de jogo!', result);
+    }, 100);
+  };
+
+  const handlePlayerSelect = (player: Player): void => {
+    if (isPlaying) return;
+    setSelectedPlayer(player);
+    Alert.alert(`Jogador ${player} selecionado`, 'Clique em Iniciar para começar!');
+  };
+
+  const handlePlayerClick = (player: Player): void => {
+    if (!isPlaying || selectedPlayer !== player) return;
+
+    if (player === 1) {
+      setPlayer1Count(prev => {
+        const updated = prev + 1;
+        player1CountRef.current = updated;
+        return updated;
+      });
+    } else if (player === 2) {
+      setPlayer2Count(prev => {
+        const updated = prev + 1;
+        player2CountRef.current = updated;
+        return updated;
+      });
+    }
+  };
+
+  const player1Style = {
+    transform: [
+      {
+        translateX: player1Position.interpolate({
+          inputRange: [-1, 0, 1],
+          outputRange: [-SCREEN_WIDTH * 0.3, 0, (SCREEN_WIDTH / 2 - BUTTON_WIDTH / 2)]
+        })
+      }
+    ]
+  };
+
+  const player2Style = {
+    transform: [
+      {
+        translateX: player2Position.interpolate({
+          inputRange: [-1, 0, 1],
+          outputRange: [SCREEN_WIDTH * 0.3, 0, -(SCREEN_WIDTH / 2 - BUTTON_WIDTH / 2)]
+        })
+      }
+    ]
+  };
 
   return (
-    //container principal da tela
     <View style={styles.container}>
-      <Text style={styles.timerText}>Tempo restante: {timeLeft}s</Text>
-      <View style={styles.playersContainer}>
+      <TouchableOpacity 
+        style={styles.backButton} 
+        onPress={handleGoBack}
+      >
+        <Ionicons name="arrow-back" size={30} color="#2c3e50" />
+      </TouchableOpacity>
 
-        {!hiderPlayer1 && (
+      <View style={styles.titleContainer}>
+        <Text style={styles.title}>Jogo do Clique</Text>
+      </View>
+
+      <View style={styles.totalScoreContainer}>
+        <Text style={styles.totalScoreText}>Vitórias: J1 {player1Wins} x {player2Wins} J2</Text>
+      </View>
+
+      <Text style={styles.timerText}>Tempo: {timeLeft}s</Text>
+
+      <View style={styles.scoreContainer}>
+        <Text style={styles.scoreText}>Jogador 1: {player1Count}</Text>
+        <Text style={styles.scoreText}>Jogador 2: {player2Count}</Text>
+      </View>
+
+      <View style={styles.playersContainer}>
+        <Animated.View style={[styles.player1Wrapper, player1Style]}>
           <TouchableOpacity
             disabled={isPlaying && selectedPlayer !== 1}
             style={[
-              styles.playerButton1,
-              { width: buttonSize, height: buttonSize }
+              styles.playerButton,
+              styles.player1Button,
+              selectedPlayer === 1 && styles.selectedPlayer,
+              isPlaying && selectedPlayer !== 1 && styles.disabledPlayer
             ]}
             onPress={() => {
               if (!isPlaying) {
-                setSelectedPlayer(1);
-                setHidePlayer2(true);
-                Alert.alert('Você escolheu o jogador 1');
+                handlePlayerSelect(1);
               } else {
-                setPlayer1Count(player1Count + 1);
-                setHidePlayer2(true);
-                // Aumenta o tamanho do botão até o máximo
-                setButtonSize((prev) => (prev < maxButtonSize ? prev + 10 : prev));
+                handlePlayerClick(1);
               }
             }}
           >
-            <Text style={styles.playerText}>Jogador 1: {player1Count}</Text>
+            <Text style={styles.playerText}>Jogador 1</Text>
           </TouchableOpacity>
-        )}
-        {!hiderPlayer2 && (
+        </Animated.View>
+
+        <Animated.View style={[styles.player2Wrapper, player2Style]}>
           <TouchableOpacity
             disabled={isPlaying && selectedPlayer !== 2}
-            style={styles.playerButton2}
+            style={[
+              styles.playerButton,
+              styles.player2Button,
+              selectedPlayer === 2 && styles.selectedPlayer,
+              isPlaying && selectedPlayer !== 2 && styles.disabledPlayer
+            ]}
             onPress={() => {
               if (!isPlaying) {
-                setSelectedPlayer(2);//escolhe o jogador1
-                setHidePlayer1(true);//esconde o jogador 1na hora da escolha
-                Alert.alert('Você escolheu o jogador 2');
+                handlePlayerSelect(2);
               } else {
-                setPlayer2Count(player2Count + 1);
-                setHidePlayer1(true);//esconde o play1
+                handlePlayerClick(2);
               }
             }}
           >
-            <Text style={styles.playerText}>Jogador 2: {player2Count}</Text>
+            <Text style={styles.playerText}>Jogador 2</Text>
           </TouchableOpacity>
-        )}
-
+        </Animated.View>
       </View>
 
-      {showButton && (
-        <TouchableOpacity style={styles.startButton} onPress={startGame}>
-          <Text style={styles.startButtonText}>Começar</Text>
+      {showButton ? (
+        <TouchableOpacity
+          style={styles.controlButton}
+          onPress={selectedPlayer ? startMatch : startNewGame}
+        >
+          <Text style={styles.controlButtonText}>
+            {selectedPlayer ? 'Iniciar Partida' : 'Novo Jogo'}
+          </Text>
+        </TouchableOpacity>
+      ) : (
+        <TouchableOpacity
+          style={[styles.controlButton, styles.stopButton]}
+          onPress={endGame}
+        >
+          <Text style={styles.controlButtonText}>Parar</Text>
         </TouchableOpacity>
       )}
 
-      {!isPlaying && timeLeft === 0 && (
-        <Text style={styles.winnerText}>{getWinner()}</Text>
+      {gameResult && (
+        <Text style={styles.resultText}>{gameResult}</Text>
       )}
     </View>
-
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,//Ocupa todo o espaco disponivel na tela
-    backgroundColor: '#f3f4f0',//cor de fundo
-    alignItems: 'center',//centraliza os itens horizontalmente
-    justifyContent: 'center',//centraliza os items verticamente
-    padding: 20,//Espaçamento interno nas bordas do caontainer
+    flex: 1,
+    backgroundColor: '#dbfdf4',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+    paddingTop: 150,
+  },
+  backButton: {
+    position: 'absolute',
+    top: 40,
+    left: 20,
+    zIndex: 1,
+    padding: 10,
+  },
+  titleContainer: {
+    position: 'absolute',
+    top: 80,
+    width: '100%',
+    alignItems: 'center',
+  },
+  title: {
+    fontSize: 30,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  totalScoreContainer: {
+    marginBottom: 10,
+  },
+  totalScoreText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#2c3e50',
   },
   timerText: {
-    fontSize: 24,//tamanho da fonte do texto do tempo
-    color: '#fff',
-    marginBottom: 20,//espaco a baixo do texto
-  },
-  startButton: {
-    backgroundColor: '#ffef00',
-    padding: 40,
-    borderRadius: 30,//bordar arrendodada
-    marginTop: 90,//Empurra para baixo
-    textAlign: 'center',
-
-
-
-
-  },
-  startButtonText: {
-    color: 'black',
-    fontSize: 20,
+    fontSize: 32,
     fontWeight: 'bold',
-
+    marginVertical: 20,
+    color: '#2c3e50',
+  },
+  scoreContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
+    marginBottom: 30,
+  },
+  scoreText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#7f8c8d',
   },
   playersContainer: {
-    flexDirection: 'row',//Organiza os botoes dos jogadores lado a lado
-    justifyContent: 'space-around',//espaco igual entre os botoes
-    width: '100%',//ocupa toda a largura da tela
-
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginBottom: 40,
   },
-  playerButton1: {
-    backgroundColor: '#8b0000',//
-    padding: 30,
-    borderRadius: 10,
-    marginHorizontal: 10,//espaco entre os botoes
-    width: '40%',
+  player1Wrapper: {
+    width: '45%',
+    alignItems: 'flex-start',
   },
-  playerButton2: {
-    backgroundColor: '#191970',
+  player2Wrapper: {
+    width: '45%',
+    alignItems: 'flex-end',
+  },
+  playerButton: {
+    width: '100%',
+    height: 80,
     padding: 30,
-    borderRadius: 10,
-    marginHorizontal: 10,
-    width: '40%',
-
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  player1Button: {
+     width:170,
+    height:100,
+    backgroundColor: '#e74c3c',
+  },
+  player2Button: {
+    width:170,
+    height:100,
+    backgroundColor: '#3498db',
+  },
+  selectedPlayer: {
+    borderWidth: 5,
+    borderColor: '#f1c40f',
+    transform: [{ scale: 1.05 }],
+  },
+  disabledPlayer: {
+    opacity: 0.5,
   },
   playerText: {
     color: 'white',
-    fontSize: 20,
+    fontSize: 18,
+    fontWeight: 'bold',
     textAlign: 'center',
+    width: '100%',
+    backgroundColor: 'transparent',
   },
-  winnerText: {
-    fontSize: 28,
-    color: '#FFD700',
-    marginTop: 30,//espaco acima do texto
-    textAlign: 'center',//centraliza o texto
+  controlButton: {
+    backgroundColor: '#ffef00',
+    borderRadius: 70,
+    marginTop: 130,
+    width: 150,
+    height: 140,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  stopButton: {
+    backgroundColor: '#e73c3c',
+  },
+  controlButtonText: {
+    color: '#002a3e',
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  resultText: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginTop: 30,
+    color: '#27ae60',
   },
 });

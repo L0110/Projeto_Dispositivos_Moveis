@@ -15,7 +15,6 @@ import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Image } from 'expo-image';
 
-
 import Arvore from '@/src/pages/Arvore_classificacao';
 import Configuracoes from '@/src/pages/Configuracoes';
 import Home from '@/src/pages/Home';
@@ -26,7 +25,6 @@ import Ranking from '@/src/pages/Ranking';
 import Selecao_jogos from '@/src/pages/Selecao_jogos';
 import Carteira from '@/src/pages/loja/Carteira';
 import Loja from '@/src/pages/loja/Loja';
-import {LojaParamList} from '@/src/pages/loja/Loja';
 import Game01 from '@/src/pages/jogos/Game01';
 import Game02 from '@/src/pages/jogos/Game02';
 import Game03 from '@/src/pages/jogos/Game03';
@@ -54,21 +52,21 @@ const App = () => {
       <Stack.Navigator initialRouteName="Login" screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="Home" component={Home} />
-        <Stack.Screen name="NovaConta" component={Nova_conta} />
-        <Stack.Screen name="Configuracoes" component={Configuracoes} />
-        <Stack.Screen name="Arvore" component={Arvore} />
-        <Stack.Screen name="Perfil" component={Perfil} />
-        <Stack.Screen name="Ranking" component={Ranking} />
-        <Stack.Screen name="Loja" component={React.memo(Loja)} />
-        <Stack.Screen name="Carteira" component={React.memo(Carteira)} />
+        {/* <Stack.Screen name="NovaConta" component={Nova_conta} /> */}
+        {/* <Stack.Screen name="Configuracoes" component={Configuracoes} /> */}
+        {/* <Stack.Screen name="Arvore" component={Arvore} /> */}
+        {/* <Stack.Screen name="Perfil" component={Perfil} /> */}
+        {/* <Stack.Screen name="Ranking" component={Ranking} /> */}
+        {/* <Stack.Screen name="Loja" component={React.memo(Loja)} /> */}
+        {/* <Stack.Screen name="Carteira" component={React.memo(Carteira)} /> */}
         <Stack.Screen name="SelecaoJogos" component={React.memo(Selecao_jogos)} />
         <Stack.Screen name="Game01" component={React.memo(Game01)} />
         <Stack.Screen name="Game02" component={React.memo(Game02)} />
         <Stack.Screen name="Game03" component={React.memo(Game03)} />
-        <Stack.Screen name="Game04" component={React.memo(Game04)} />
-        <Stack.Screen name="Derrota" component={React.memo(Derrota)} />
-        <Stack.Screen name="Empate" component={React.memo(Empate)} />
-        <Stack.Screen name="Vitoria" component={React.memo(Vitoria)} />
+        {/* <Stack.Screen name="Game04" component={React.memo(Game04)} /> */}
+        {/* <Stack.Screen name="Derrota" component={React.memo(Derrota)} /> */}
+        {/* <Stack.Screen name="Empate" component={React.memo(Empate)} /> */}
+        {/* <Stack.Screen name="Vitoria" component={React.memo(Vitoria)} /> */}
 
       </Stack.Navigator>
     </NavigationContainer>
