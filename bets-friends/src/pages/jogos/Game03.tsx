@@ -1,15 +1,7 @@
-<<<<<<< HEAD
-/*
-Game quem aperta o botão primeiro
-- Exige comunicacao entre dois jogadores
-- Tela inicial com botão de iniciar o jogo
-- Tela de jogo com botão que conta em quantos segundos o jogador apertou o botão
-*/
-=======
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import { DatabaseConnection } from '@/src/database/database-connection';
-const db = DatabaseConnection.getConnection();
+// import { DatabaseConnection } from '@/src/database/database-connection';
+// const db = DatabaseConnection.getConnection();
 
 // Tipos
 type Word = {
@@ -228,22 +220,12 @@ const App = () => {
     pontuacaoUsuario: number,
     pontuacaoOponente: number
   ): void => {
-    // Use executeSql diretamente se transaction não existir em db
-    db.transaction((tx: any) => {
-      tx.executeSql(
-        `INSERT INTO table_partida 
-          (idUsuario, idOponente, valorAposta, valorGanho, valorPerdido, pontuacaoUsuario, pontuacaoOponente) 
-          VALUES (?, ?, ?, ?, ?, ?, ?)`,
-        [usuarioId, oponenteId, valorAposta, valorGanho, valorPerdido, pontuacaoUsuario, pontuacaoOponente],
-        () => {
-          console.log('Resultado salvo com sucesso!');
-        },
-        (_: unknown, error: any) => {
-          console.log('Erro ao salvar resultado:', error);
-          return false;
-        }
-      );
-    });
+    // Aqui você deve implementar a lógica para salvar o resultado no banco de dados
+    // Exemplo:
+    console.log(`Resultado salvo: 
+      Usuário: ${usuarioId}, Oponente: ${oponenteId}, 
+      Aposta: ${valorAposta}, Ganho: ${valorGanho}, Perdido: ${valorPerdido}, 
+      Pontuação Usuário: ${pontuacaoUsuario}, Pontuação Oponente: ${pontuacaoOponente}`);
   };
 
   const renderWord = () => {
@@ -349,4 +331,3 @@ const App = () => {
 }
 
 export default App;
->>>>>>> parent of c84e766 (Revert "Inclusao Game03")
